@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "IBM Plex Sans Thai", sans-serif;
+  --font-body: "IBM Plex Sans Thai", sans-serif;
+  
+  --color-primary: var(--color-blue-800);
+  --color-primary-dim: var(--color-blue-900);
+  --color-primary-container: var(--color-blue-100);
+  --color-on-primary: var(--color-blue-50);
+  --color-on-primary-container: var(--color-blue-900);
+  
+  --color-secondary: var(--color-emerald-700);
+  --color-secondary-container: var(--color-emerald-200);
+  --color-on-secondary-container: var(--color-emerald-900);
+  
+  --color-tertiary: var(--color-purple-700);
+  --color-tertiary-container: var(--color-purple-200);
+  --color-on-tertiary-container: var(--color-purple-900);
+  
+  --color-surface: var(--color-slate-50);
+  --color-surface-container-low: var(--color-slate-100);
+  --color-surface-container: var(--color-slate-200);
+  --color-surface-container-high: var(--color-slate-400);
+  --color-surface-container-highest: var(--color-slate-500);
+  --color-surface-container-lowest: var(--color-white);
+  
+  --color-on-surface: var(--color-slate-700);
+  --color-on-surface-variant: var(--color-slate-500);
+  --color-outline-variant: var(--color-slate-300);
+  
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+}
+
+@layer base {
+  body {
+    @apply font-body bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container;
+  }
+}
+
+.bg-mesh {
+  background: radial-gradient(at 0% 0%, var(--color-primary-container), transparent 70%),
+              radial-gradient(at 100% 0%, var(--color-tertiary-container)),
+              radial-gradient(at 100% 100%, var(--color-secondary-container), transparent 70%),
+              radial-gradient(at 0% 100%, var(--color-primary-container), transparent 70%);
+}
+
+.signature-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dim) 100%);
+}
+
+.glass-morphism {
+  background: rgba(211, 228, 255, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}

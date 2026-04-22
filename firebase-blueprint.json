@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "Application": {
+      "title": "Application",
+      "description": "An internship application entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "uid": { "type": "string" },
+        "company": { "type": "string" },
+        "role": { "type": "string" },
+        "status": { "type": "string", "enum": ["Applied", "Interviewing", "Accepted", "Rejected"] },
+        "location": { "type": "string" },
+        "salary": { "type": "string" },
+        "notes": { "type": "string" },
+        "initial": { "type": "string" },
+        "logo": { "type": "string" },
+        "phone": { "type": "string" },
+        "website": { "type": "string" },
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "date": { "type": "string" },
+              "time": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["uid", "company", "role", "status"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Collection of internship applications"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents"
+    }
+  }
+}
