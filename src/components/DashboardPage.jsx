@@ -367,11 +367,11 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                 <div className="flex flex-wrap gap-4 text-xs font-medium text-on-surface-variant">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5" />
-                    {app.location}
+                    {app.location?.trim() || '-'}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CircleDollarSign className="w-3.5 h-3.5 " />
-                    {app.salary}
+                    {app.salary?.trim() || '-'}
                   </div>
                   {app.schedule && (
                     <div className="flex items-center gap-1.5">
