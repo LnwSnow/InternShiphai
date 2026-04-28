@@ -140,8 +140,12 @@ export default function App() {
           if (activity.date) {
             const [day, month, year] = activity.date.split('/').map(Number);
             const [hours, minutes] = (activity.time || '00:00').split(':').map(Number);
-            const activityDate = new Date(year, month - 1, day, hours, minutes);
-            if (activityDate > now && activityDate <= threeDaysFromNow) {
+            
+            // Treat user input as Bangkok Time (UTC+7)
+            // Subtract 7 hours from input hours to get UTC representation
+            const activityDate = new Date(Date.UTC(year, month - 1, day, hours - 7, minutes));
+            
+            if (!activity.completed && activityDate > now && activityDate <= threeDaysFromNow) {
               count++;
             }
           }

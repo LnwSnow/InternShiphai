@@ -12,7 +12,9 @@ import {
   Presentation, 
   Trash,
   MessageSquare,
-  X
+  X,
+  CheckCircle2,
+  Circle
 } from 'lucide-react';
 import { Modal } from './Modal';
 
@@ -44,9 +46,12 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
           if (activity.date) {
             const [day, month, year] = activity.date.split('/').map(Number);
             const [hours, minutes] = (activity.time || '00:00').split(':').map(Number);
-            const activityDate = new Date(year, month - 1, day, hours, minutes);
             
-            if (activityDate > now && activityDate <= threeDaysFromNow) {
+            // Treat user input as Bangkok Time (UTC+7)
+            // Subtract 7 hours from input hours to get UTC representation
+            const activityDate = new Date(Date.UTC(year, month - 1, day, hours - 7, minutes));
+            
+            if (!activity.completed && activityDate > now && activityDate <= threeDaysFromNow) {
               allActivities.push({
                 ...activity,
                 company: app.company,
@@ -88,13 +93,13 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
   const handleUpdateClick = (app) => {
     setSelectedApp(app);
     setUpdateStatus(app.status);
-    setActivities(app.activities || [{ id: Date.now(), name: '', date: '', time: '' }]);
+    setActivities(app.activities || [{ id: Date.now(), name: '', date: '', time: '', completed: false }]);
     setActiveModal('update');
     setActiveMenu(null);
   };
 
   const addActivity = () => {
-    setActivities([...activities, { id: Date.now(), name: '', date: '', time: '' }]);
+    setActivities([...activities, { id: Date.now(), name: '', date: '', time: '', completed: false }]);
   };
 
   const removeActivity = (id) => {
@@ -148,13 +153,19 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                   <h4 className="text-on-primary font-bold text-lg">
                     {activity.name} {
                       (() => {
-                        const diff = activity.fullDate.getTime() - now.getTime();
-                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        // Get current time in Bangkok
+                        const bkkNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+                        const bkkActivity = new Date(activity.fullDate.getTime() + (7 * 60 * 60 * 1000));
                         
-                        if (days === 0) return 'Today';
-                        if (days === 1) return 'Tomorrow';
-                        return `in ${days} days`;
+                        // Compare dates at midnight to determine day difference
+                        const bkkNowMidnight = new Date(bkkNow.getUTCFullYear(), bkkNow.getUTCMonth(), bkkNow.getUTCDate());
+                        const bkkActivityMidnight = new Date(bkkActivity.getUTCFullYear(), bkkActivity.getUTCMonth(), bkkActivity.getUTCDate());
+                        
+                        const dayDiff = Math.round((bkkActivityMidnight - bkkNowMidnight) / (1000 * 60 * 60 * 24));
+                        
+                        if (dayDiff === 0) return 'Today';
+                        if (dayDiff === 1) return 'Tomorrow';
+                        return `in ${dayDiff} days`;
                       })()
                     } at {activity.company}
                   </h4>
@@ -502,10 +513,21 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
 
           <div className="space-y-6">
             {activities.map((activity, index) => (
-              <div key={activity.id} className="space-y-4">
-                <div className="space-y-2">
+              <div key={activity.id} className={`space-y-4 p-6 rounded-3xl transition-all ${activity.completed ? 'bg-surface-container-low opacity-60' : 'bg-surface-container'}`}>
+                <div className="space-y-4">
                   <div className="flex justify-between items-center px-1">
-                    <label className="text-sm font-medium text-on-surface-variant">Activity</label>
+                    <div className="flex items-center gap-3">
+                      <button 
+                        type="button"
+                        onClick={() => handleActivityChange(activity.id, 'completed', !activity.completed)}
+                        className={`transition-all hover:scale-110 active:scale-95 ${activity.completed ? 'text-emerald-700' : 'text-on-surface-variant/40'}`}
+                      >
+                        {activity.completed ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
+                      </button>
+                      <label className={`text-sm font-bold transition-all ${activity.completed ? 'text-emerald-700' : 'text-on-surface-variant'}`}>
+                        {activity.completed ? 'Completed' : 'Upcoming Activity'}
+                      </label>
+                    </div>
                     <button onClick={() => removeActivity(activity.id)} className="text-on-surface-variant hover:text-red-500 transition-colors">
                       <X className="w-5 h-5" />
                     </button>
@@ -515,7 +537,7 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                     value={activity.name}
                     onChange={(e) => handleActivityChange(activity.id, 'name', e.target.value)}
                     placeholder="Activity name"
-                    className="w-full bg-surface-container border-none rounded-full px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                    className={`w-full border-none rounded-full px-6 py-4 transition-all outline-none bg-surface-container-lowest ${activity.completed ? 'line-through text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -526,9 +548,10 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                       <input 
                         type="text" 
                         value={activity.date}
+                        disabled={activity.completed}
                         onChange={(e) => handleActivityChange(activity.id, 'date', e.target.value)}
                         placeholder="DD/MM/YYYY"
-                        className="w-full bg-surface-container border-none rounded-full pl-14 pr-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                        className={`w-full border-none rounded-full pl-14 pr-6 py-4 transition-all outline-none bg-surface-container-lowest ${activity.completed ? 'text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
                       />
                     </div>
                   </div>
@@ -539,9 +562,10 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                       <input 
                         type="text" 
                         value={activity.time}
+                        disabled={activity.completed}
                         onChange={(e) => handleActivityChange(activity.id, 'time', e.target.value)}
                         placeholder="00:00"
-                        className="w-full bg-surface-container border-none rounded-full pl-14 pr-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                        className={`w-full border-none rounded-full pl-14 pr-6 py-4 transition-all outline-none bg-surface-container-lowest ${activity.completed ? 'text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
                       />
                     </div>
                   </div>
