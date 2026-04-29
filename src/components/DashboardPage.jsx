@@ -75,6 +75,10 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
       app.role.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'All Statuses' || app.status === statusFilter;
     return matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    const timeA = (a.updatedAt || a.createdAt)?.seconds || 0;
+    const timeB = (b.updatedAt || b.createdAt)?.seconds || 0;
+    return timeB - timeA;
   });
 
   const handleEditClick = (app) => {

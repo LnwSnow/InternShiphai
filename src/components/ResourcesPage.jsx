@@ -47,6 +47,12 @@ export const ResourcesPage = ({ applications = [], onUpdate }) => {
     }
   ];
 
+  const sortedApplications = [...applications].sort((a, b) => {
+    const timeA = (a.updatedAt || a.createdAt)?.seconds || 0;
+    const timeB = (b.updatedAt || b.createdAt)?.seconds || 0;
+    return timeB - timeA;
+  });
+
   return (
     <div className="pt-28 pb-20 px-6 max-w-screen-xl mx-auto min-h-screen">
       <section className="mb-20">
@@ -73,15 +79,15 @@ export const ResourcesPage = ({ applications = [], onUpdate }) => {
           ))}
         </div>
       </section>
-
+ 
       <section>
         <div className="mb-10">
           <h2 className="text-4xl font-extrabold tracking-tighter text-on-surface mb-2">Company Details</h2>
         </div>
-
+ 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {applications.length > 0 ? (
-            applications.map((app) => (
+          {sortedApplications.length > 0 ? (
+            sortedApplications.map((app) => (
               <div key={app.id} className="bg-surface-container-low rounded-lg p-8 flex flex-col gap-6 transition-all hover:shadow-md">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-surface-container-lowest rounded-md flex items-center justify-center shadow-sm overflow-hidden">
