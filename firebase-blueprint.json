@@ -9,7 +9,7 @@
         "uid": { "type": "string" },
         "company": { "type": "string" },
         "role": { "type": "string" },
-        "status": { "type": "string", "enum": ["Applied", "Interviewing", "Accepted", "Rejected"] },
+        "status": { "type": "string", "enum": ["Researching", "Applied", "Interviewing", "Accepted", "Rejected"] },
         "location": { "type": "string" },
         "salary": { "type": "string" },
         "notes": { "type": "string" },

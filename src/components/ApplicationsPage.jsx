@@ -119,8 +119,9 @@ export const ApplicationsPage = ({ onAdd }) => {
         <div className="bg-surface-container-low rounded-3xl p-8 md:p-12 shadow-sm space-y-8">
           <div className="space-y-4">
             <label className="text-sm font-medium text-on-surface-variant px-1">Status</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
+                { name: 'Researching', class: 'bg-amber-100 text-amber-900 border-amber-200' },
                 { name: 'Applied', class: 'bg-blue-100 text-blue-900 border-blue-200' },
                 { name: 'Interviewing', class: 'bg-purple-100 text-purple-900 border-purple-200' },
                 { name: 'Accepted', class: 'bg-emerald-100 text-emerald-900 border-emerald-200' },
@@ -162,34 +163,32 @@ export const ApplicationsPage = ({ onAdd }) => {
                 <div className="md:col-span-3 space-y-2">
                   {index === 0 && <label className="text-sm font-medium text-on-surface-variant px-1">Date</label>}
                   <div className="relative">
-                    <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+                    <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5 pointer-events-none" />
                     <input 
-                      type="text" 
+                      type="date" 
                       value={activity.date}
                       onChange={(e) => {
                         const newActivities = [...activities];
                         newActivities[index].date = e.target.value;
                         setActivities(newActivities);
                       }}
-                      placeholder="DD/MM/YYYY"
-                      className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                      className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
                     />
                   </div>
                 </div>
                 <div className="md:col-span-3 space-y-2">
                   {index === 0 && <label className="text-sm font-medium text-on-surface-variant px-1">Time</label>}
                   <div className="relative">
-                    <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+                    <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5 pointer-events-none" />
                     <input 
-                      type="text" 
+                      type="time" 
                       value={activity.time}
                       onChange={(e) => {
                         const newActivities = [...activities];
                         newActivities[index].time = e.target.value;
                         setActivities(newActivities);
                       }}
-                      placeholder="00:00"
-                      className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                      className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none"
                     />
                   </div>
                 </div>

@@ -86,7 +86,7 @@ export default function App() {
     }
   };
 
-  const addApplication = async (newApp) => {
+  const addApplication = async (newApp, shouldRedirect = true) => {
     if (!user) return;
     try {
       // Automatic data enrichment from mock profiles
@@ -98,7 +98,9 @@ export default function App() {
         uid: user.uid,
         createdAt: serverTimestamp()
       });
-      setCurrentPage('dashboard');
+      if (shouldRedirect) {
+        setCurrentPage('dashboard');
+      }
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'applications');
     }
@@ -138,7 +140,14 @@ export default function App() {
       if (app.activities && Array.isArray(app.activities)) {
         app.activities.forEach(activity => {
           if (activity.date) {
-            const [day, month, year] = activity.date.split('/').map(Number);
+            let day, month, year;
+            if (activity.date.includes('-')) {
+              // YYYY-MM-DD format from native date picker
+              [year, month, day] = activity.date.split('-').map(Number);
+            } else {
+              // DD/MM/YYYY format
+              [day, month, year] = activity.date.split('/').map(Number);
+            }
             const [hours, minutes] = (activity.time || '00:00').split(':').map(Number);
             
             // Treat user input as Bangkok Time (UTC+7)
@@ -172,7 +181,7 @@ export default function App() {
       case 'applications':
         return <ApplicationsPage onAdd={addApplication} />;
       case 'resources':
-        return <ResourcesPage applications={applications} onUpdate={updateApplication} />;
+        return <ResourcesPage applications={applications} onUpdate={updateApplication} onAdd={addApplication} />;
       default:
         return <LandingPage onStart={user ? () => setCurrentPage('dashboard') : login} />;
     }

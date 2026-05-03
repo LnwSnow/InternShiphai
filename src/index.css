@@ -35,7 +35,7 @@
 
 @layer base {
   body {
-    @apply font-body bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container;
+    @apply font-body bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container transition-colors duration-300;
   }
 }
 

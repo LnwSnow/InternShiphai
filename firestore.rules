@@ -61,7 +61,7 @@ service cloud.firestore {
     }
 
     function isValidEmail(email) {
-      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+      return email is string && (email == "" || email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"));
     }
 
     function isValidUrl(url) {
@@ -94,7 +94,7 @@ service cloud.firestore {
              data.uid == request.auth.uid &&
              data.company is string && data.company.size() > 0 && data.company.size() < 100 &&
              data.role is string && data.role.size() > 0 && data.role.size() < 100 &&
-             data.status in ['Applied', 'Interviewing', 'Accepted', 'Rejected'] &&
+             data.status in ['Researching', 'Applied', 'Interviewing', 'Accepted', 'Rejected'] &&
              (!('email' in data) || isValidEmail(data.email)) &&
              (!('website' in data) || (data.website is string && data.website.size() < 500)) &&
              (!('logo' in data) || (data.logo is string && data.logo.size() < 1000));

@@ -3,10 +3,18 @@ import { FileText, ArrowRight, MapPin, Phone, Globe, Mail, PlusCircle, Edit } fr
 import { INITIAL_APPLICATIONS } from '../constants';
 import { Modal } from './Modal';
 
-export const ResourcesPage = ({ applications = [], onUpdate }) => {
+export const ResourcesPage = ({ applications = [], onUpdate, onAdd }) => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editData, setEditData] = useState({ phone: '', website: '', email: '' });
+  const [newCompanyData, setNewCompanyData] = useState({
+    company: '',
+    website: '',
+    phone: '',
+    email: '',
+    notes: ''
+  });
 
   const handleAddInfoClick = (app) => {
     setSelectedApp(app);
@@ -24,6 +32,26 @@ export const ResourcesPage = ({ applications = [], onUpdate }) => {
       ...editData
     });
     setIsEditModalOpen(false);
+  };
+
+  const handleAddCompany = () => {
+    if (!newCompanyData.company) return;
+    
+    onAdd({
+      ...newCompanyData,
+      role: 'Internship Candidate', // Default role for listed companies
+      status: 'Researching', // A status that identifies it came from resources
+      activities: []
+    }, false);
+    
+    setIsAddModalOpen(false);
+    setNewCompanyData({
+      company: '',
+      website: '',
+      phone: '',
+      email: '',
+      notes: ''
+    });
   };
 
   const templates = [
@@ -81,8 +109,18 @@ export const ResourcesPage = ({ applications = [], onUpdate }) => {
       </section>
  
       <section>
-        <div className="mb-10">
-          <h2 className="text-4xl font-extrabold tracking-tighter text-on-surface mb-2">Company Details</h2>
+        <div className="mb-10 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-4xl font-extrabold tracking-tighter text-on-surface mb-2">Company Details</h2>
+            <p className="text-on-surface-variant text-sm">Stored resources and notes for your target companies.</p>
+          </div>
+          <button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-primary text-on-primary px-8 py-3 rounded-full font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-md shrink-0"
+          >
+            <PlusCircle className="w-5 h-5" />
+            Add Company
+          </button>
         </div>
  
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -225,6 +263,95 @@ export const ResourcesPage = ({ applications = [], onUpdate }) => {
               className="flex-1 bg-blue-800 text-white py-4 rounded-full font-bold text-lg hover:bg-blue-900 shadow-lg transition-all"
             >
               Save
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add New Company"
+      >
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-on-surface-variant px-1">Company Name</label>
+            <input 
+              type="text" 
+              value={newCompanyData.company}
+              onChange={(e) => setNewCompanyData({ ...newCompanyData, company: e.target.value })}
+              className="w-full bg-surface-container border-none rounded-2xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 outline-none"
+              placeholder="e.g. Google, Apple"
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-on-surface-variant px-1">Website</label>
+              <div className="relative">
+                <Globe className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+                <input 
+                  type="text" 
+                  value={newCompanyData.website}
+                  onChange={(e) => setNewCompanyData({ ...newCompanyData, website: e.target.value })}
+                  className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 outline-none"
+                  placeholder="www.company.com"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-on-surface-variant px-1">Phone</label>
+              <div className="relative">
+                <Phone className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+                <input 
+                  type="text" 
+                  value={newCompanyData.phone}
+                  onChange={(e) => setNewCompanyData({ ...newCompanyData, phone: e.target.value })}
+                  className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 outline-none"
+                  placeholder="08-xxxx-xxxx"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-on-surface-variant px-1">Email</label>
+            <div className="relative">
+              <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+              <input 
+                type="email" 
+                value={newCompanyData.email}
+                onChange={(e) => setNewCompanyData({ ...newCompanyData, email: e.target.value })}
+                className="w-full bg-surface-container border-none rounded-2xl pl-14 pr-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 outline-none"
+                placeholder="hr@company.com"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-on-surface-variant px-1">Notes</label>
+            <textarea 
+              value={newCompanyData.notes}
+              onChange={(e) => setNewCompanyData({ ...newCompanyData, notes: e.target.value })}
+              className="w-full bg-surface-container border-none rounded-2xl px-6 py-4 text-on-surface focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+              placeholder="Add your notes about company here..."
+              rows={4}
+            />
+          </div>
+
+          <div className="flex gap-4 pt-6">
+            <button 
+              onClick={() => setIsAddModalOpen(false)}
+              className="flex-1 bg-blue-100/50 text-blue-900 py-4 rounded-full font-bold text-lg hover:bg-blue-100 transition-all"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleAddCompany}
+              className="flex-1 bg-blue-800 text-white py-4 rounded-full font-bold text-lg hover:bg-blue-900 shadow-lg transition-all"
+            >
+              Add Company
             </button>
           </div>
         </div>

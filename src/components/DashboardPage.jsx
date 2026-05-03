@@ -44,7 +44,14 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
       if (app.activities && Array.isArray(app.activities)) {
         app.activities.forEach(activity => {
           if (activity.date) {
-            const [day, month, year] = activity.date.split('/').map(Number);
+            let day, month, year;
+            if (activity.date.includes('-')) {
+              // YYYY-MM-DD format from native date picker
+              [year, month, day] = activity.date.split('-').map(Number);
+            } else {
+              // DD/MM/YYYY format
+              [day, month, year] = activity.date.split('/').map(Number);
+            }
             const [hours, minutes] = (activity.time || '00:00').split(':').map(Number);
             
             // Treat user input as Bangkok Time (UTC+7)
@@ -205,6 +212,7 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                 statusFilter === 'Interviewing' ? 'bg-purple-100 text-purple-900' :
                 statusFilter === 'Accepted' ? 'bg-emerald-100 text-emerald-900' :
                 statusFilter === 'Rejected' ? 'bg-red-100 text-red-900' :
+                statusFilter === 'Researching' ? 'bg-amber-100 text-amber-900' :
                 'bg-surface-container-low text-on-surface'
               }`}
             >
@@ -224,6 +232,7 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                   >
                     {[
                       { name: 'All Statuses', class: 'bg-surface-container-low text-on-surface' },
+                      { name: 'Researching', class: 'bg-amber-100 text-amber-900' },
                       { name: 'Applied', class: 'bg-blue-100 text-blue-900' },
                       { name: 'Interviewing', class: 'bg-purple-100 text-purple-900' },
                       { name: 'Accepted', class: 'bg-emerald-100 text-emerald-900' },
@@ -303,6 +312,7 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                     app.status === 'Interviewing' ? 'bg-purple-100 text-purple-900 border border-purple-200' :
                     app.status === 'Accepted' ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' :
                     app.status === 'Rejected' ? 'bg-red-100 text-red-900 border border-red-200' :
+                    app.status === 'Researching' ? 'bg-amber-100 text-amber-900 border border-amber-200' :
                     'bg-primary-container text-on-primary-container'
                   }`}>
                     {app.status}
@@ -494,6 +504,7 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
             <label className="text-sm font-medium text-on-surface-variant px-1">Status</label>
             <div className="grid grid-cols-2 gap-3">
               {[
+                { name: 'Researching', class: 'bg-amber-100 text-amber-900 border-amber-200' },
                 { name: 'Applied', class: 'bg-blue-100 text-blue-900 border-blue-200' },
                 { name: 'Interviewing', class: 'bg-purple-100 text-purple-900 border-purple-200' },
                 { name: 'Accepted', class: 'bg-emerald-100 text-emerald-900 border-emerald-200' },
@@ -548,28 +559,26 @@ export const DashboardPage = ({ applications, searchQuery, onAddClick, onUpdate,
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-on-surface-variant px-1">Date</label>
                     <div className="relative">
-                      <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+                      <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5 pointer-events-none" />
                       <input 
-                        type="text" 
+                        type="date" 
                         value={activity.date}
                         disabled={activity.completed}
                         onChange={(e) => handleActivityChange(activity.id, 'date', e.target.value)}
-                        placeholder="DD/MM/YYYY"
-                        className={`w-full border-none rounded-full pl-14 pr-6 py-4 transition-all outline-none bg-surface-container-lowest ${activity.completed ? 'text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
+                        className={`w-full border-none rounded-full pl-14 pr-6 py-4 transition-all outline-none bg-surface-container-lowest appearance-none ${activity.completed ? 'text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-on-surface-variant px-1">Time</label>
                     <div className="relative">
-                      <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5" />
+                      <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant w-5 h-5 pointer-events-none" />
                       <input 
-                        type="text" 
+                        type="time" 
                         value={activity.time}
                         disabled={activity.completed}
                         onChange={(e) => handleActivityChange(activity.id, 'time', e.target.value)}
-                        placeholder="00:00"
-                        className={`w-full border-none rounded-full pl-14 pr-6 py-4 transition-all outline-none bg-surface-container-lowest ${activity.completed ? 'text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
+                        className={`w-full border-none rounded-full pl-14 pr-6 py-4 transition-all outline-none bg-surface-container-lowest appearance-none ${activity.completed ? 'text-on-surface-variant' : 'text-on-surface focus:ring-2 focus:ring-primary/20'}`}
                       />
                     </div>
                   </div>
